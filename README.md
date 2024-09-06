@@ -1,0 +1,2 @@
+# AffairsGroupAutotests
+Affairs Group Autotests
