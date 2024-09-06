@@ -1,0 +1,4 @@
+config\TestEnvironment.class
+pages\DashBoardPage.class
+pages\LoginPage.class
+pages\HomePage.class
