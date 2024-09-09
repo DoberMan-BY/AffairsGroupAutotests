@@ -4,7 +4,8 @@ import aquality.selenium.core.logging.Logger;
 import aquality.selenium.core.utilities.ISettingsFile;
 import aquality.selenium.core.utilities.JsonSettingsFile;
 import config.TestEnvironment;
-import helpers.ScreenshotHelper;
+import helpers.allure.LogsToAllure;
+import helpers.allure.ScreenshotHelper;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeTest;
@@ -18,8 +19,9 @@ public class BaseTest {
     ISettingsFile environment = new JsonSettingsFile("environment/" +
             Optional.ofNullable(System.getProperty("environment")).orElse(TestEnvironment.TEST_1.getEnvFileName()));
 
-    @BeforeTest
+    @BeforeTest(alwaysRun = true)
     protected synchronized void setUp() {
+        LogsToAllure.setupLogging();
         log.info("Starting tests");
         browser = AqualityServices.getBrowser();
         browser.maximize();
@@ -30,6 +32,7 @@ public class BaseTest {
     @AfterMethod(alwaysRun = true)
     protected synchronized void tearDown(ITestResult result) {
         log.info("Ending tests");
+        LogsToAllure.attachLogsToAllure();
         if (!result.isSuccess()) {
             ScreenshotHelper.addScreenShotToAllure(browser.getDriver());
         }
