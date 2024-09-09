@@ -17,32 +17,38 @@ public class LogsToAllure {
     private static WriterAppender appender;
 
     public static void setupLogging() {
-        // 1. Create StringWriter to capture logs
-        logWriter = new StringWriter();
+        if (logWriter == null) {
+            // 1. Initialize StringWriter for capturing logs (only once)
+            logWriter = new StringWriter();
 
-        // 2. Define the log format (PatternLayout)
-        PatternLayout layout = PatternLayout.newBuilder()
-                .withPattern("%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n")
-                .build();
+            // 2. Define the log format (PatternLayout)
+            PatternLayout layout = PatternLayout.newBuilder()
+                    .withPattern("%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n")
+                    .build();
 
-        // 3. Create a filter for INFO level logs
-        Filter infoFilter = ThresholdFilter.createFilter(Level.INFO, Filter.Result.ACCEPT, Filter.Result.DENY);
+            // 3. Create a filter for INFO level logs
+            Filter infoFilter = ThresholdFilter.createFilter(Level.INFO, Filter.Result.ACCEPT, Filter.Result.DENY);
 
-        // 4. Create the WriterAppender for capturing INFO logs
-        appender = WriterAppender.newBuilder()
-                .setTarget(logWriter)
-                .setName("LogToAllureAppender")
-                .setLayout(layout)
-                .setFilter(infoFilter)
-                .build();
-        appender.start();
+            // 4. Create the WriterAppender for capturing INFO logs
+            appender = WriterAppender.newBuilder()
+                    .setTarget(logWriter)
+                    .setName("LogToAllureAppender")
+                    .setLayout(layout)
+                    .setFilter(infoFilter)
+                    .build();
+            appender.start();
 
-        // 5. Attach the appender to the root logger
-        LoggerContext context = (LoggerContext) LogManager.getContext(false);
-        org.apache.logging.log4j.core.Logger coreLogger = context.getLogger(LogManager.ROOT_LOGGER_NAME);
-        coreLogger.addAppender(appender);
-        coreLogger.setAdditive(true);
+            // 5. Attach the appender to the root logger
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            org.apache.logging.log4j.core.Logger coreLogger = context.getLogger(LogManager.ROOT_LOGGER_NAME);
+            coreLogger.addAppender(appender);
+            coreLogger.setAdditive(true);
+        } else {
+            // Clear the StringWriter buffer before each test
+            logWriter.getBuffer().setLength(0);
+        }
     }
+
 
     public static void attachLogsToAllure() {
         // 6. Attach logs to the Allure report
@@ -53,6 +59,9 @@ public class LogsToAllure {
 
         // 7. Stop the appender to release resources
         appender.stop();
+
+        // 8. Clear logs after each test
+        logWriter.getBuffer().setLength(0);  // Clear the log buffer after attaching
     }
 }
 

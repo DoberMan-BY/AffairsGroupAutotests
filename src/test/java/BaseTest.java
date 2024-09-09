@@ -8,19 +8,20 @@ import helpers.allure.LogsToAllure;
 import helpers.allure.ScreenshotHelper;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeMethod;
 
 import java.util.Optional;
 
 public class BaseTest {
 
-    protected final Logger log = AqualityServices.getLogger();
+    protected Logger log;
     Browser browser = AqualityServices.getBrowser();
     ISettingsFile environment = new JsonSettingsFile("environment/" +
             Optional.ofNullable(System.getProperty("environment")).orElse(TestEnvironment.TEST_1.getEnvFileName()));
 
-    @BeforeTest(alwaysRun = true)
+    @BeforeMethod(alwaysRun = true)
     protected synchronized void setUp() {
+        log =  AqualityServices.getLogger();
         LogsToAllure.setupLogging();
         log.info("Starting tests");
         browser = AqualityServices.getBrowser();
