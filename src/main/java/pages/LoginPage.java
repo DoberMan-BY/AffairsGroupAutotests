@@ -22,7 +22,7 @@ public class LoginPage extends Form {
     }
 
     public void enterPassword(String password) {
-        txbPassword.sendKeys(password);
+        txbPassword.typeSecret(password);
     }
 
     public void clickLogin() {
